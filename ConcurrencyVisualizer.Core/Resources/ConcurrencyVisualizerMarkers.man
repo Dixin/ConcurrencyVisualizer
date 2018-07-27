@@ -1,0 +1,86 @@
+﻿<instrumentationManifest
+    xmlns="http://schemas.microsoft.com/win/2004/08/events"
+    xmlns:win="http://manifests.microsoft.com/win/2004/08/windows/events"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <instrumentation>
+    <events>
+      <provider
+        name="ConcurrencyVisualizerMarkers"
+        guid="{{{0}}}"
+        messageFileName=""
+        resourceFileName=""
+        symbol="ConcurrencyVisualizerMarkers">
+        <!-- Provider tasks. -->
+        <tasks>
+          <task name="Span" value="1" />
+          <task name="Flag" value="2" />
+          <task name="Message" value="3" />
+        </tasks>
+        <!-- Provider opcodes. -->
+        <opcodes>
+          <opcode name="WriteFlag" message="$(string.opcode_WriteFlag)" value="11" />
+          <opcode name="WriteMessage" message="$(string.opcode_WriteMessage)" value="12" />
+        </opcodes>
+        <!-- Provider keywords. -->
+        <keywords>
+        </keywords>
+        <!-- Provider events. -->
+        <events>
+          <event symbol="EnterSpan" value="1" version="1" level="win:Informational" task="Span" opcode="win:Start" template="EnterSpanArgs" />
+          <event symbol="LeaveSpan" value="2" version="1" level="win:Informational" task="Span" opcode="win:Stop" template="LeaveSpanArgs" />
+          <event symbol="WriteFlag" value="3" version="1" level="win:Informational" task="Flag" opcode="WriteFlag" template="WriteFlagArgs" />
+          <event symbol="WriteMessage" value="4" version="1" level="win:Informational" task="Message" opcode="WriteMessage" template="WriteMessageArgs" />
+        </events>
+        <!-- Provider templates. -->
+        <templates>
+          <template tid="EnterSpanArgs">
+            <data name="cvType" inType="win:UInt8" />
+            <data name="cvImportance" inType="win:UInt8" />
+            <data name="cvCategory" inType="win:UInt8" />
+            <data name="cvSpanId" inType="win:Int32" />
+            <data name="cvSeries" inType="win:UnicodeString" />
+            <data name="cvTextW" inType="win:UnicodeString" />
+            <data name="cvTextA" inType="win:AnsiString" />
+          </template>
+          <template tid="LeaveSpanArgs">
+            <data name="cvType" inType="win:UInt8" />
+            <data name="cvImportance" inType="win:UInt8" />
+            <data name="cvCategory" inType="win:UInt8" />
+            <data name="cvSpanId" inType="win:Int32" />
+            <data name="cvSeries" inType="win:UnicodeString" />
+            <data name="cvTextW" inType="win:UnicodeString" />
+            <data name="cvTextA" inType="win:AnsiString" />
+          </template>
+          <template tid="WriteFlagArgs">
+            <data name="cvType" inType="win:UInt8" />
+            <data name="cvImportance" inType="win:UInt8" />
+            <data name="cvCategory" inType="win:UInt8" />
+            <data name="cvSeries" inType="win:UnicodeString" />
+            <data name="cvTextW" inType="win:UnicodeString" />
+            <data name="cvTextA" inType="win:AnsiString" />
+          </template>
+          <template tid="WriteMessageArgs">
+            <data name="cvType" inType="win:UInt8" />
+            <data name="cvImportance" inType="win:UInt8" />
+            <data name="cvCategory" inType="win:UInt8" />
+            <data name="cvSeries" inType="win:UnicodeString" />
+            <data name="cvTextW" inType="win:UnicodeString" />
+            <data name="cvTextA" inType="win:AnsiString" />
+          </template>
+        </templates>
+      </provider>
+    </events>
+  </instrumentation>
+
+  <localization>
+    <resources culture="en-US">
+      <stringTable>
+        <string id="opcode_WriteFlag" value="WriteFlag"/>
+        <string id="opcode_WriteMessage" value="WriteMessage"/>
+      </stringTable>
+    </resources>
+
+  </localization>
+</instrumentationManifest>
+
+

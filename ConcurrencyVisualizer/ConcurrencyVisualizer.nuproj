@@ -11,7 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="lib\Microsoft.ConcurrencyVisualizer.Markers.dll" />
+    <Content Include="lib\net45\Microsoft.ConcurrencyVisualizer.Markers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ConcurrencyVisualizer.Core\ConcurrencyVisualizer.Core.csproj" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>8dfd1eac-ccbd-4704-8142-44d9a8486d98</ProjectGuid>
@@ -22,21 +25,23 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>ConcurrencyVisualizer</Id>
-    <Version>1.0.1</Version>
+    <Version>2.0.0</Version>
     <Title>Microsoft Concurrency Visualizer SDK Tools</Title>
     <Authors>Dixin Yan</Authors>
     <Owners>Dixin Yan</Owners>
     <Summary>Microsoft Concurrency Visualizer SDK Tools</Summary>
-    <Description>This is a Nuget wrapper of Microsoft Concurrency Visualizer SDK Tools: https://www.microsoft.com/en-in/download/details.aspx?id=49103.
+    <Description>This is a NuGet version of Microsoft Concurrency Visualizer SDK Tools: https://www.microsoft.com/en-in/download/details.aspx?id=49103.
 
-For Microsoft Visual Studio Concurrency Visualizer, please see: https://msdn.microsoft.com/en-us/library/dd537632.aspx.</Description>
+Microsoft released the binary for .NET Framework 4.5. I ported it to .NET Standard 2.0, so this NuGet package works for both .NET Core and .NET Framework.
+
+For Microsoft Visual Studio Concurrency Visualizer, please see: https://docs.microsoft.com/en-us/visualstudio/profiling/concurrency-visualizer.</Description>
     <ReleaseNotes>
     </ReleaseNotes>
     <ProjectUrl>https://github.com/Dixin/ConcurrencyVisualizer</ProjectUrl>
     <LicenseUrl>
     </LicenseUrl>
     <Copyright>Dixin Yan https://weblogs.asp.net/dixin</Copyright>
-    <Tags>ConcurrencyVisualizer Concurrency Visualizer SDK Tools Microsoft VisualStudio Visual Studio</Tags>
+    <Tags>ConcurrencyVisualizer Concurrency Visualizer SDK Tools Microsoft VisualStudio Visual Studio Profile Profiler .NET Framework .NETFramework .NETCore Core .NETStandard Standard Markers</Tags>
   </PropertyGroup>
   <Import Project="$(NuProjPath)\NuProj.targets" />
 </Project>
