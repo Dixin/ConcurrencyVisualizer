@@ -1,4 +1,4 @@
-﻿// Assembly Microsoft.ConcurrencyVisualizer.Markers, Version 14.0.0.0
+﻿// Assembly Microsoft.ConcurrencyVisualizer.Markers, Version 15.0.0.0
 
 [assembly: System.Runtime.CompilerServices.CompilationRelaxations(8)]
 [assembly: System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)]

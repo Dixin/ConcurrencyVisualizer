@@ -2,70 +2,44 @@
 {
     public static class Markers
     {
-        public static MarkerSeries CreateMarkerSeries(string seriesName)
-        {
-            return DefaultWriter.CreateMarkerSeries(seriesName);
-        }
+        public static MarkerSeries CreateMarkerSeries(string seriesName) => 
+            DefaultWriter.CreateMarkerSeries(seriesName);
 
-        public static Span EnterSpan(string text)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(text);
-        }
+        public static Span EnterSpan(string text) => 
+            DefaultWriter.DefaultSeries.EnterSpan(text);
 
-        public static Span EnterSpan(Importance level, string text)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(level, text);
-        }
+        public static Span EnterSpan(Importance level, string text) => 
+            DefaultWriter.DefaultSeries.EnterSpan(level, text);
 
-        public static Span EnterSpan(int category, string text)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(category, text);
-        }
+        public static Span EnterSpan(int category, string text) => 
+            DefaultWriter.DefaultSeries.EnterSpan(category, text);
 
-        public static Span EnterSpan(string format, params object[] args)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(format, args);
-        }
+        public static Span EnterSpan(string format, params object[] args) => 
+            DefaultWriter.DefaultSeries.EnterSpan(format, args);
 
-        public static Span EnterSpan(Importance level, int category, string text)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(level, category, text);
-        }
+        public static Span EnterSpan(Importance level, int category, string text) => 
+            DefaultWriter.DefaultSeries.EnterSpan(level, category, text);
 
-        public static Span EnterSpan(Importance level, string format, params object[] args)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(level, format, args);
-        }
+        public static Span EnterSpan(Importance level, string format, params object[] args) => 
+            DefaultWriter.DefaultSeries.EnterSpan(level, format, args);
 
-        public static Span EnterSpan(int category, string format, params object[] args)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(category, format, args);
-        }
+        public static Span EnterSpan(int category, string format, params object[] args) => 
+            DefaultWriter.DefaultSeries.EnterSpan(category, format, args);
 
-        public static Span EnterSpan(Importance level, int category, string format, params object[] args)
-        {
-            return DefaultWriter.DefaultSeries.EnterSpan(level, category, format, args);
-        }
+        public static Span EnterSpan(Importance level, int category, string format, params object[] args) => 
+            DefaultWriter.DefaultSeries.EnterSpan(level, category, format, args);
 
-        public static bool IsEnabled()
-        {
-            return DefaultWriter.IsEnabled();
-        }
+        public static bool IsEnabled() => 
+            DefaultWriter.IsEnabled();
 
-        public static bool IsEnabled(Importance level)
-        {
-            return DefaultWriter.IsEnabled(level);
-        }
+        public static bool IsEnabled(Importance level) => 
+            DefaultWriter.IsEnabled(level);
 
-        public static bool IsEnabled(int category)
-        {
-            return DefaultWriter.IsEnabled(category);
-        }
+        public static bool IsEnabled(int category) => 
+            DefaultWriter.IsEnabled(category);
 
-        public static bool IsEnabled(Importance level, int category)
-        {
-            return DefaultWriter.IsEnabled(level, category);
-        }
+        public static bool IsEnabled(Importance level, int category) => 
+            DefaultWriter.IsEnabled(level, category);
 
         public static void WriteAlert(string text)
         {

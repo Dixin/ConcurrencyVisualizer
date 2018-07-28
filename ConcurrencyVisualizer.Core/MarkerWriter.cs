@@ -222,7 +222,7 @@
 
         private unsafe void EtwEnableCallback(ref Guid sourceId, int isEnabled, byte setLevel, long anyKeyword, long allKeyword, NativeMethods.EventFilterDescriptor* filterData, void* callbackContext)
         {
-            this.enabled = (isEnabled != 0);
+            this.enabled = isEnabled != 0;
             this.traceLevel = setLevel;
             this.anyKeywordMask = anyKeyword;
             this.allKeywordMask = allKeyword;
@@ -244,40 +244,39 @@
             manifestEnvelope.ChunkNumber = 0;
             ManifestEnvelope manifestEnvelope2 = manifestEnvelope;
             NativeMethods.EventData* ptr = stackalloc NativeMethods.EventData[2];
-            ptr->Ptr = (ulong)(&manifestEnvelope2);
+            ptr->Ptr = (ulong)&manifestEnvelope2;
             ptr->Size = (uint)sizeof(ManifestEnvelope);
             ptr[1].Size = (uint)this.manifest.Length;
-            byte[] array = this.manifest;
             bool result;
-            fixed (byte* ptr2 = array)
+            fixed (byte* ptr2 = this.manifest)
             {
                 ptr[1].Ptr = (ulong)ptr2;
-                result = (NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, 2u, ptr) == 0);
+                result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, 2u, ptr) == 0;
             }
             return result;
         }
 
         private unsafe bool WriteMarkerEvent(ref System.Diagnostics.Eventing.EventDescriptor sourceDescriptor, Importance level, int category, int spanId, string markerSeries, string text)
         {
-            int userDataCount = (sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2) ? 7 : 6;
+            int userDataCount = sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2 ? 7 : 6;
             System.Diagnostics.Eventing.EventDescriptor eventDescriptor = new System.Diagnostics.Eventing.EventDescriptor(sourceDescriptor.EventId, sourceDescriptor.Version, sourceDescriptor.Channel, (byte)level, sourceDescriptor.Opcode, sourceDescriptor.Task, FromCategoryToKeyword(category));
             NativeMethods.EventData* ptr = stackalloc NativeMethods.EventData[7];
             byte b = (byte)sourceDescriptor.EventId;
-            ptr->Ptr = (ulong)(&b);
+            ptr->Ptr = (ulong)&b;
             ptr->Size = 1u;
-            ptr[1].Ptr = (ulong)(&level);
+            ptr[1].Ptr = (ulong)&level;
             ptr[1].Size = 1u;
-            ptr[2].Ptr = (ulong)(&category);
+            ptr[2].Ptr = (ulong)&category;
             ptr[2].Size = 1u;
             int num = 3;
             if (sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2)
             {
-                ptr[3].Ptr = (ulong)(&spanId);
+                ptr[3].Ptr = (ulong)&spanId;
                 ptr[3].Size = 4u;
                 num = 4;
             }
-            ptr[num].Size = (uint)((((!string.IsNullOrEmpty(markerSeries)) ? markerSeries.Length : 0) + 1) * 2);
-            ptr[num + 1].Size = (uint)((((!string.IsNullOrEmpty(text)) ? text.Length : 0) + 1) * 2);
+            ptr[num].Size = (uint)(((!string.IsNullOrEmpty(markerSeries) ? markerSeries.Length : 0) + 1) * 2);
+            ptr[num + 1].Size = (uint)(((!string.IsNullOrEmpty(text) ? text.Length : 0) + 1) * 2);
             ptr[num + 2].Size = 1u;
             bool result;
             fixed (char* ptr2 = string.IsNullOrEmpty(markerSeries) ? string.Empty : markerSeries)
@@ -289,7 +288,7 @@
                         ptr[num].Ptr = (ulong)ptr2;
                         ptr[num + 1].Ptr = (ulong)ptr3;
                         ptr[num + 2].Ptr = (ulong)ptr4;
-                        result = (NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, (uint)userDataCount, ptr) == 0);
+                        result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, (uint)userDataCount, ptr) == 0;
                     }
                 }
             }
@@ -298,10 +297,9 @@
 
         internal static long FromCategoryToKeyword(int category)
         {
-            int num = (category == -1) ? 62 : (((category >= 0) ? category : 0) % 48);
+            int num = category == -1 ? 62 : (category >= 0 ? category : 0) % 48;
             return -9223372036854775808L | 1L << num;
         }
     }
-
 }
 

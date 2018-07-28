@@ -39,7 +39,7 @@
             {
                 char[] separator = new char[] { ';' };
                 string[] strArray = initializeData.Split(separator);
-                this.InitializeProvider((strArray.Length > 1) ? strArray[1].Trim() : null, strArray[0].Trim());
+                this.InitializeProvider(strArray.Length > 1 ? strArray[1].Trim() : null, strArray[0].Trim());
             }
         }
 
@@ -88,21 +88,18 @@
                     }
                 }
             }
-
             this.series = !string.IsNullOrEmpty(seriesName) ? this.writer.CreateMarkerSeries(seriesName) : this.writer.DefaultSeries;
         }
 
-        private bool IsStackTraceEnabled(TraceEventCache eventCache)
-        {
-            return ((eventCache != null) && ((this.TraceOutputOptions & TraceOptions.Callstack) > TraceOptions.None));
-        }
+        private bool IsStackTraceEnabled(TraceEventCache eventCache) => 
+            eventCache != null && (this.TraceOutputOptions & TraceOptions.Callstack) > TraceOptions.None;
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
         {
-            if (this.series.IsEnabled() && ((this.Filter == null) || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
+            if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
                 StringBuilder builder = new StringBuilder(0x200);
-                builder.Append((data != null) ? data.ToString() : "null");
+                builder.Append(data != null ? data.ToString() : "null");
                 if (this.IsStackTraceEnabled(eventCache))
                 {
                     builder.Append("\r\nCallstack:\r\n");
@@ -118,14 +115,14 @@
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
         {
-            if (this.series.IsEnabled() && ((this.Filter == null) || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
+            if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
                 StringBuilder builder = new StringBuilder(0x200);
                 if (data != null)
                 {
                     for (int i = 0; i < data.Length; i++)
                     {
-                        builder.Append((data[i] != null) ? data[i].ToString() : "null");
+                        builder.Append(data[i] != null ? data[i].ToString() : "null");
                         builder.Append("\r\n");
                     }
                 }
@@ -144,7 +141,7 @@
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id)
         {
-            if (this.series.IsEnabled() && ((this.Filter == null) || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
+            if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
                 if (this.IsStackTraceEnabled(eventCache))
                 {
@@ -159,7 +156,7 @@
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string message)
         {
-            if (this.series.IsEnabled() && ((this.Filter == null) || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
+            if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
                 if (this.IsStackTraceEnabled(eventCache))
                 {
@@ -174,10 +171,10 @@
 
         public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
         {
-            if (this.series.IsEnabled() && ((this.Filter == null) || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
+            if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
                 StringBuilder builder = new StringBuilder(0x200);
-                if ((args != null) && (args.Length != 0))
+                if (args != null && args.Length != 0)
                 {
                     builder.AppendFormat(CultureInfo.InvariantCulture, format, args);
                 }
@@ -205,26 +202,32 @@
 
         private void WriteEvent(TraceEventType eventType, int id, string text)
         {
-            switch (eventType)
+            if (eventType <= TraceEventType.Warning)
             {
-                case TraceEventType.Critical:
-                case TraceEventType.Error:
+                if (eventType - 1 <= TraceEventType.Critical)
+                {
                     this.series.WriteFlag(Importance.Critical, id, text);
                     return;
-
-                case TraceEventType.Warning:
+                }
+                if (eventType == TraceEventType.Warning)
+                {
                     this.series.WriteFlag(Importance.High, id, text);
                     return;
-
-                case TraceEventType.Information:
+                }
+            }
+            else
+            {
+                if (eventType == TraceEventType.Information)
+                {
                     this.series.WriteMessage(id, text);
                     return;
-
-                case TraceEventType.Verbose:
+                }
+                if (eventType == TraceEventType.Verbose)
+                {
                     this.series.WriteMessage(Importance.Low, id, text);
                     return;
+                }
             }
-
             this.series.WriteMessage(Importance.Low, id, text);
         }
 

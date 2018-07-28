@@ -25,14 +25,14 @@
   <Import Project="$(NuProjPath)\NuProj.props" Condition="Exists('$(NuProjPath)\NuProj.props')" />
   <PropertyGroup Label="Configuration">
     <Id>ConcurrencyVisualizer</Id>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Title>Microsoft Concurrency Visualizer SDK Tools</Title>
     <Authors>Dixin Yan</Authors>
     <Owners>Dixin Yan</Owners>
-    <Summary>Microsoft Concurrency Visualizer SDK Tools</Summary>
-    <Description>This is a NuGet version of Microsoft Concurrency Visualizer SDK Tools: https://www.microsoft.com/en-in/download/details.aspx?id=49103.
+    <Summary>Microsoft Concurrency Visualizer SDK Tools for .NET Standard</Summary>
+    <Description>This is a NuGet package of Microsoft Concurrency Visualizer SDK Tools in .NET Standard. https://weblogs.asp.net/dixin/port-microsoft-concurrency-visualizer-sdk-to-net-standard-and-nuget
 
-Microsoft released the binary for .NET Framework 4.5. I ported it to .NET Standard 2.0, so this NuGet package works for both .NET Core and .NET Framework.
+Microsoft released the binary for .NET Framework 4.5. I ported it to .NET Standard, so this NuGet package works for both .NET Core, .NET Framework, etc.
 
 For Microsoft Visual Studio Concurrency Visualizer, please see: https://docs.microsoft.com/en-us/visualstudio/profiling/concurrency-visualizer.</Description>
     <ReleaseNotes>

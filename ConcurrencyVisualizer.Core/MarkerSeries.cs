@@ -14,25 +14,17 @@
             this.SeriesName = seriesName;
         }
 
-        public Span EnterSpan(string text)
-        {
-            return this.EnterSpan(Importance.Normal, 0, text);
-        }
+        public Span EnterSpan(string text) => 
+            this.EnterSpan(Importance.Normal, 0, text);
 
-        public Span EnterSpan(Importance level, string text)
-        {
-            return this.EnterSpan(level, 0, text);
-        }
+        public Span EnterSpan(Importance level, string text) => 
+            this.EnterSpan(level, 0, text);
 
-        public Span EnterSpan(int category, string text)
-        {
-            return this.EnterSpan(Importance.Normal, category, text);
-        }
+        public Span EnterSpan(int category, string text) => 
+            this.EnterSpan(Importance.Normal, category, text);
 
-        public Span EnterSpan(string format, params object[] args)
-        {
-            return this.EnterSpan(string.Format(format, args));
-        }
+        public Span EnterSpan(string format, params object[] args) => 
+            this.EnterSpan(string.Format(format, args));
 
         public Span EnterSpan(Importance level, int category, string text)
         {
@@ -41,40 +33,26 @@
             return span;
         }
 
-        public Span EnterSpan(Importance level, string format, params object[] args)
-        {
-            return this.EnterSpan(level, string.Format(format, args));
-        }
+        public Span EnterSpan(Importance level, string format, params object[] args) => 
+            this.EnterSpan(level, string.Format(format, args));
 
-        public Span EnterSpan(int category, string format, params object[] args)
-        {
-            return this.EnterSpan(category, string.Format(format, args));
-        }
+        public Span EnterSpan(int category, string format, params object[] args) => 
+            this.EnterSpan(category, string.Format(format, args));
 
-        public Span EnterSpan(Importance level, int category, string format, params object[] args)
-        {
-            return this.EnterSpan(level, category, string.Format(format, args));
-        }
+        public Span EnterSpan(Importance level, int category, string format, params object[] args) => 
+            this.EnterSpan(level, category, string.Format(format, args));
 
-        public bool IsEnabled()
-        {
-            return this.Writer.IsEnabled();
-        }
+        public bool IsEnabled() => 
+            this.Writer.IsEnabled();
 
-        public bool IsEnabled(Importance level)
-        {
-            return this.Writer.IsEnabled(level);
-        }
+        public bool IsEnabled(Importance level) => 
+            this.Writer.IsEnabled(level);
 
-        public bool IsEnabled(int category)
-        {
-            return this.Writer.IsEnabled(category);
-        }
+        public bool IsEnabled(int category) => 
+            this.Writer.IsEnabled(category);
 
-        public bool IsEnabled(Importance level, int category)
-        {
-            return this.Writer.IsEnabled(level, category);
-        }
+        public bool IsEnabled(Importance level, int category) => 
+            this.Writer.IsEnabled(level, category);
 
         internal void LeaveSpan(Span span)
         {
