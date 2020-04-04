@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation
 {
     public enum Importance
     {
@@ -9,4 +9,3 @@
         Low = 5
     }
 }
-

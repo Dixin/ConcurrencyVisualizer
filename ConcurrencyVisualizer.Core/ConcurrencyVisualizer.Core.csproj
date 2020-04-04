@@ -2,20 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Microsoft.ConcurrencyVisualizer.Markers</AssemblyName>
     <RootNamespace>Microsoft.ConcurrencyVisualizer.Instrumentation</RootNamespace>
-    <Product>ConcurrencyVisualizer</Product>
-    <AssemblyVersion>15.0.0.0</AssemblyVersion>
-    <FileVersion>15.1.114.2</FileVersion>
-    <Version>2.1.0</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Product>Microsoft Concurrency Visualizer</Product>
+    <Description>Microsoft.ConcurrencyVisualizer.Markers</Description>
+    <AssemblyVersion>16.0.0.0</AssemblyVersion>
+    <FileVersion>16.0.20200210.3</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Security.Permissions" Version="4.5.0" />
+    <PackageReference Include="System.Security.Permissions" Version="4.7.0" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation
 {
     using System;
     using System.ComponentModel;
@@ -7,6 +7,8 @@
     using System.Reflection;
     using System.Text;
     using System.Threading;
+
+    using EventDescriptor = System.Diagnostics.Eventing.EventDescriptor;
 
     public sealed class MarkerWriter : IDisposable
     {
@@ -66,7 +68,7 @@
 
         private bool enabled;
 
-        private volatile int currentSpanId = -2147483648;
+        private volatile int currentSpanId = int.MinValue;
 
         private volatile int manifestWritten;
 
@@ -80,10 +82,10 @@
         static MarkerWriter()
         {
             DefaultProviderGuid = new Guid("8D4925AB-505A-483b-A7E0-6F824A07A6F0");
-            enterSpanEvent = new System.Diagnostics.Eventing.EventDescriptor(1, 1, 16, 4, 1, 1, -9223372036854775808L);
-            leaveSpanEvent = new System.Diagnostics.Eventing.EventDescriptor(2, 1, 16, 4, 2, 1, -9223372036854775808L);
-            flagEvent = new System.Diagnostics.Eventing.EventDescriptor(3, 1, 16, 4, 11, 2, -9223372036854775808L);
-            messageEvent = new System.Diagnostics.Eventing.EventDescriptor(4, 1, 16, 4, 12, 3, -9223372036854775808L);
+            enterSpanEvent = new System.Diagnostics.Eventing.EventDescriptor(1, 1, 16, 4, 1, 1, long.MinValue);
+            leaveSpanEvent = new System.Diagnostics.Eventing.EventDescriptor(2, 1, 16, 4, 2, 1, long.MinValue);
+            flagEvent = new System.Diagnostics.Eventing.EventDescriptor(3, 1, 16, 4, 11, 2, long.MinValue);
+            messageEvent = new System.Diagnostics.Eventing.EventDescriptor(4, 1, 16, 4, 12, 3, long.MinValue);
         }
 
         public unsafe MarkerWriter(Guid providerId)
@@ -93,7 +95,7 @@
             {
                 this.manifest = Encoding.UTF8.GetBytes(string.Format(CultureInfo.InvariantCulture, streamReader.ReadToEnd(), new object[1]
                 {
-                providerId
+                    providerId
                 }));
             }
 
@@ -103,65 +105,32 @@
             {
                 throw new Win32Exception((int)num, string.Format(CultureInfo.InvariantCulture, "Failed to register ETW provider: {0}.", new object[1]
                 {
-                providerId
+                    providerId
                 }));
             }
 
             this.DefaultSeries = this.CreateMarkerSeries(MarkerSeries.DefaultSeriesName);
         }
 
-        ~MarkerWriter()
-        {
-            this.Dispose(false);
-        }
+        ~MarkerWriter() => this.Dispose(disposing: false);
 
-        public MarkerSeries CreateMarkerSeries(string seriesName)
-        {
-            return new MarkerSeries(this, seriesName);
-        }
+        public MarkerSeries CreateMarkerSeries(string seriesName) => new MarkerSeries(this, seriesName);
 
-        public bool IsEnabled()
-        {
-            return this.enabled;
-        }
+        public bool IsEnabled() => this.enabled;
 
-        public bool IsEnabled(Importance level)
-        {
-            if (this.enabled)
-            {
-                return this.IsLevelEnabled(level);
-            }
-            return false;
-        }
+        public bool IsEnabled(Importance level) => this.enabled && this.IsLevelEnabled(level);
 
-        public bool IsEnabled(int category)
-        {
-            if (this.enabled)
-            {
-                return this.IsCategoryEnabled(category);
-            }
-            return false;
-        }
+        public bool IsEnabled(int category) => this.enabled && this.IsCategoryEnabled(category);
 
-        public bool IsEnabled(Importance level, int category)
-        {
-            if (this.enabled && this.IsLevelEnabled(level))
-            {
-                return this.IsCategoryEnabled(category);
-            }
-            return false;
-        }
+        public bool IsEnabled(Importance level, int category) => this.enabled && this.IsLevelEnabled(level) && this.IsCategoryEnabled(category);
 
         public void Dispose()
         {
-            this.Dispose(true);
+            this.Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
 
-        internal int GetNewSpanId()
-        {
-            return Interlocked.Increment(ref this.currentSpanId);
-        }
+        internal int GetNewSpanId() => Interlocked.Increment(ref this.currentSpanId);
 
         internal bool WriteMarkerEvent(MarkerEventType eventType, string seriesName, Importance level, int category, int spanId, string text)
         {
@@ -177,19 +146,15 @@
             {
                 this.WriteManifestEvent();
             }
-            switch (eventType)
+
+            return eventType switch
             {
-                case MarkerEventType.EnterSpan:
-                    return this.WriteMarkerEvent(ref enterSpanEvent, level, category, spanId, seriesName, text);
-                case MarkerEventType.LeaveSpan:
-                    return this.WriteMarkerEvent(ref leaveSpanEvent, level, category, spanId, seriesName, string.Empty);
-                case MarkerEventType.Flag:
-                    return this.WriteMarkerEvent(ref flagEvent, level, category, 0, seriesName, text);
-                case MarkerEventType.Message:
-                    return this.WriteMarkerEvent(ref messageEvent, level, category, 0, seriesName, text);
-                default:
-                    return false;
-            }
+                MarkerEventType.EnterSpan => this.WriteMarkerEvent(ref enterSpanEvent, level, category, spanId, seriesName, text),
+                MarkerEventType.LeaveSpan => this.WriteMarkerEvent(ref leaveSpanEvent, level, category, spanId, seriesName, string.Empty),
+                MarkerEventType.Flag => this.WriteMarkerEvent(ref flagEvent, level, category, 0, seriesName, text),
+                MarkerEventType.Message => this.WriteMarkerEvent(ref messageEvent, level, category, 0, seriesName, text),
+                _ => false
+            };
         }
 
         private void Dispose(bool disposing)
@@ -201,23 +166,12 @@
             }
         }
 
-        private bool IsLevelEnabled(Importance level)
-        {
-            if ((byte)level > this.traceLevel)
-            {
-                return this.traceLevel == 0;
-            }
-            return true;
-        }
+        private bool IsLevelEnabled(Importance level) => (byte) level <= this.traceLevel || this.traceLevel == 0;
 
         private bool IsCategoryEnabled(int category)
         {
             long num = FromCategoryToKeyword(category);
-            if ((this.anyKeywordMask & num) != 0L)
-            {
-                return (this.allKeywordMask & num) == this.allKeywordMask;
-            }
-            return false;
+            return (this.anyKeywordMask & num) != 0L && (this.allKeywordMask & num) == this.allKeywordMask;
         }
 
         private unsafe void EtwEnableCallback(ref Guid sourceId, int isEnabled, byte setLevel, long anyKeyword, long allKeyword, NativeMethods.EventFilterDescriptor* filterData, void* callbackContext)
@@ -235,16 +189,17 @@
         private unsafe bool WriteManifestEvent()
         {
             System.Diagnostics.Eventing.EventDescriptor eventDescriptor = new System.Diagnostics.Eventing.EventDescriptor(65534, 1, 0, 0, 254, 0, -1L);
-            ManifestEnvelope manifestEnvelope = default(ManifestEnvelope);
-            manifestEnvelope.Format = ManifestEnvelope.ManifestFormats.SimpleXmlFormat;
-            manifestEnvelope.MajorVersion = 1;
-            manifestEnvelope.MinorVersion = 0;
-            manifestEnvelope.Magic = 91;
-            manifestEnvelope.TotalChunks = 1;
-            manifestEnvelope.ChunkNumber = 0;
-            ManifestEnvelope manifestEnvelope2 = manifestEnvelope;
+            ManifestEnvelope manifestEnvelope = new ManifestEnvelope
+            {
+                Format = ManifestEnvelope.ManifestFormats.SimpleXmlFormat,
+                MajorVersion = 1,
+                MinorVersion = 0,
+                Magic = 91,
+                TotalChunks = 1,
+                ChunkNumber = 0
+            };
             NativeMethods.EventData* ptr = stackalloc NativeMethods.EventData[2];
-            ptr->Ptr = (ulong)&manifestEnvelope2;
+            ptr->Ptr = (ulong)&manifestEnvelope;
             ptr->Size = (uint)sizeof(ManifestEnvelope);
             ptr[1].Size = (uint)this.manifest.Length;
             bool result;
@@ -256,10 +211,10 @@
             return result;
         }
 
-        private unsafe bool WriteMarkerEvent(ref System.Diagnostics.Eventing.EventDescriptor sourceDescriptor, Importance level, int category, int spanId, string markerSeries, string text)
+        private unsafe bool WriteMarkerEvent(ref EventDescriptor sourceDescriptor, Importance level, int category, int spanId, string markerSeries, string text)
         {
             int userDataCount = sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2 ? 7 : 6;
-            System.Diagnostics.Eventing.EventDescriptor eventDescriptor = new System.Diagnostics.Eventing.EventDescriptor(sourceDescriptor.EventId, sourceDescriptor.Version, sourceDescriptor.Channel, (byte)level, sourceDescriptor.Opcode, sourceDescriptor.Task, FromCategoryToKeyword(category));
+            EventDescriptor eventDescriptor = new EventDescriptor(sourceDescriptor.EventId, sourceDescriptor.Version, sourceDescriptor.Channel, (byte)level, sourceDescriptor.Opcode, sourceDescriptor.Task, FromCategoryToKeyword(category));
             NativeMethods.EventData* ptr = stackalloc NativeMethods.EventData[7];
             byte b = (byte)sourceDescriptor.EventId;
             ptr->Ptr = (ulong)&b;
@@ -298,8 +253,7 @@
         internal static long FromCategoryToKeyword(int category)
         {
             int num = category == -1 ? 62 : (category >= 0 ? category : 0) % 48;
-            return -9223372036854775808L | 1L << num;
+            return long.MinValue | (1L << num);
         }
     }
 }
-

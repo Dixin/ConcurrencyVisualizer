@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation
 {
     internal enum MarkerEventType
     {
@@ -8,4 +8,3 @@
         Message
     }
 }
-

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation
 {
     using System;
     using System.Collections.Generic;
@@ -8,14 +8,20 @@
 
     internal sealed class MarkerTraceListener : TraceListener
     {
-        private static readonly Dictionary<string, MarkerWriter> writers = new Dictionary<string, MarkerWriter>();
-        private static readonly object lockObject = new object();
+        private static readonly Dictionary<string, MarkerWriter> writers;
+
+        private static readonly object lockObject;
+
         private MarkerWriter writer;
+
         private MarkerSeries series;
+
         private bool isDisposed;
 
         static MarkerTraceListener()
         {
+            lockObject = new object();
+            writers = new Dictionary<string, MarkerWriter>();
             try
             {
                 writers.Add(MarkerWriter.DefaultProviderGuid.ToString("D"), new MarkerWriter(MarkerWriter.DefaultProviderGuid));
@@ -25,44 +31,32 @@
             }
         }
 
-        public MarkerTraceListener() : this(null, null)
+        public MarkerTraceListener()
+            : this(null, null)
         {
         }
 
-        public MarkerTraceListener(string initializeData) : base("MarkerTraceListener")
+        public MarkerTraceListener(string initializeData)
+            : base("MarkerTraceListener")
         {
             if (string.IsNullOrEmpty(initializeData))
             {
                 this.InitializeProvider(null, null);
+                return;
             }
-            else
-            {
-                char[] separator = new char[] { ';' };
-                string[] strArray = initializeData.Split(separator);
-                this.InitializeProvider(strArray.Length > 1 ? strArray[1].Trim() : null, strArray[0].Trim());
-            }
+            string[] array = initializeData.Split(';');
+            this.InitializeProvider(array.Length > 1 ? array[1].Trim() : null, array[0].Trim());
         }
 
-        public MarkerTraceListener(string providerId, string seriesName) : base("MarkerTraceListener")
-        {
+        public MarkerTraceListener(string providerId, string seriesName)
+            : base("MarkerTraceListener") =>
             this.InitializeProvider(providerId, seriesName);
-        }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (!this.isDisposed)
-            {
-                this.series = null;
-                this.writer.Dispose();
-                this.isDisposed = true;
-            }
-            base.Dispose(disposing);
-        }
+        public override void Write(string message) => this.series.WriteMessage(message);
 
-        public override void Fail(string message)
-        {
-            this.series.WriteAlert(message);
-        }
+        public override void WriteLine(string message) => this.Write(message);
+
+        public override void Fail(string message) => this.series.WriteAlert(message);
 
         public override void Fail(string message, string detailMessage)
         {
@@ -72,70 +66,49 @@
             }
         }
 
-        private void InitializeProvider(string providerId, string seriesName)
-        {
-            Guid guid = !string.IsNullOrEmpty(providerId) ? new Guid(providerId) : MarkerWriter.DefaultProviderGuid;
-            string key = guid.ToString("D");
-            if (!writers.TryGetValue(key, out this.writer))
-            {
-                object lockObject = MarkerTraceListener.lockObject;
-                lock (lockObject)
-                {
-                    if (!writers.TryGetValue(key, out this.writer))
-                    {
-                        this.writer = new MarkerWriter(guid);
-                        writers[key] = this.writer;
-                    }
-                }
-            }
-            this.series = !string.IsNullOrEmpty(seriesName) ? this.writer.CreateMarkerSeries(seriesName) : this.writer.DefaultSeries;
-        }
-
-        private bool IsStackTraceEnabled(TraceEventCache eventCache) => 
-            eventCache != null && (this.TraceOutputOptions & TraceOptions.Callstack) > TraceOptions.None;
-
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
         {
             if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
-                StringBuilder builder = new StringBuilder(0x200);
-                builder.Append(data != null ? data.ToString() : "null");
+                StringBuilder stringBuilder = new StringBuilder(512);
+                stringBuilder.Append(data != null ? data.ToString() : "null");
                 if (this.IsStackTraceEnabled(eventCache))
                 {
-                    builder.Append("\r\nCallstack:\r\n");
-                    builder.Append(eventCache.Callstack);
-                    this.WriteEvent(eventType, id, builder.ToString());
+                    stringBuilder.Append("\r\nCallstack:\r\n");
+                    stringBuilder.Append(eventCache.Callstack);
+                    this.WriteEvent(eventType, id, stringBuilder.ToString());
                 }
                 else
                 {
-                    this.WriteEvent(eventType, id, builder.ToString());
+                    this.WriteEvent(eventType, id, stringBuilder.ToString());
                 }
             }
         }
 
         public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
         {
-            if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
+            if (!this.series.IsEnabled() || this.Filter != null && !this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null))
             {
-                StringBuilder builder = new StringBuilder(0x200);
-                if (data != null)
+                return;
+            }
+            StringBuilder stringBuilder = new StringBuilder(512);
+            if (data != null)
+            {
+                for (int i = 0; i < data.Length; i++)
                 {
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        builder.Append(data[i] != null ? data[i].ToString() : "null");
-                        builder.Append("\r\n");
-                    }
+                    stringBuilder.Append(data[i] != null ? data[i].ToString() : "null");
+                    stringBuilder.Append("\r\n");
                 }
-                if (this.IsStackTraceEnabled(eventCache))
-                {
-                    builder.Append("\r\nCallstack:\r\n");
-                    builder.Append(eventCache.Callstack);
-                    this.WriteEvent(eventType, id, builder.ToString());
-                }
-                else
-                {
-                    this.WriteEvent(eventType, id, builder.ToString());
-                }
+            }
+            if (this.IsStackTraceEnabled(eventCache))
+            {
+                stringBuilder.Append("\r\nCallstack:\r\n");
+                stringBuilder.Append(eventCache.Callstack);
+                this.WriteEvent(eventType, id, stringBuilder.ToString());
+            }
+            else
+            {
+                this.WriteEvent(eventType, id, stringBuilder.ToString());
             }
         }
 
@@ -173,68 +146,81 @@
         {
             if (this.series.IsEnabled() && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
             {
-                StringBuilder builder = new StringBuilder(0x200);
+                StringBuilder stringBuilder = new StringBuilder(512);
                 if (args != null && args.Length != 0)
                 {
-                    builder.AppendFormat(CultureInfo.InvariantCulture, format, args);
+                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, format, args);
                 }
                 else
                 {
-                    builder.Append(format);
+                    stringBuilder.Append(format);
                 }
                 if (this.IsStackTraceEnabled(eventCache))
                 {
-                    builder.Append("\r\nCallstack:\r\n");
-                    builder.Append(eventCache.Callstack);
-                    this.WriteEvent(eventType, id, builder.ToString());
+                    stringBuilder.Append("\r\nCallstack:\r\n");
+                    stringBuilder.Append(eventCache.Callstack);
+                    this.WriteEvent(eventType, id, stringBuilder.ToString());
                 }
                 else
                 {
-                    this.WriteEvent(eventType, id, builder.ToString());
+                    this.WriteEvent(eventType, id, stringBuilder.ToString());
                 }
             }
         }
 
-        public override void Write(string message)
+        protected override void Dispose(bool disposing)
         {
-            this.series.WriteMessage(message);
+            if (!this.isDisposed)
+            {
+                this.series = null;
+                this.writer.Dispose();
+                this.isDisposed = true;
+            }
+            base.Dispose(disposing);
         }
+
+        private bool IsStackTraceEnabled(TraceEventCache eventCache) => eventCache != null && (this.TraceOutputOptions & TraceOptions.Callstack) != 0;
 
         private void WriteEvent(TraceEventType eventType, int id, string text)
         {
-            if (eventType <= TraceEventType.Warning)
+            switch (eventType)
             {
-                if (eventType - 1 <= TraceEventType.Critical)
-                {
+                case TraceEventType.Critical:
+                case TraceEventType.Error:
                     this.series.WriteFlag(Importance.Critical, id, text);
-                    return;
-                }
-                if (eventType == TraceEventType.Warning)
-                {
+                    break;
+                case TraceEventType.Warning:
                     this.series.WriteFlag(Importance.High, id, text);
-                    return;
-                }
-            }
-            else
-            {
-                if (eventType == TraceEventType.Information)
-                {
+                    break;
+                case TraceEventType.Information:
                     this.series.WriteMessage(id, text);
-                    return;
-                }
-                if (eventType == TraceEventType.Verbose)
-                {
+                    break;
+                case TraceEventType.Verbose:
                     this.series.WriteMessage(Importance.Low, id, text);
-                    return;
-                }
+                    break;
+                default:
+                    this.series.WriteMessage(Importance.Low, id, text);
+                    break;
             }
-            this.series.WriteMessage(Importance.Low, id, text);
         }
 
-        public override void WriteLine(string message)
+        private void InitializeProvider(string providerId, string seriesName)
         {
-            this.Write(message);
+            Guid providerId2 = !string.IsNullOrEmpty(providerId) ? new Guid(providerId) : MarkerWriter.DefaultProviderGuid;
+            string key = providerId2.ToString("D");
+            if (!writers.TryGetValue(key, out this.writer))
+            {
+                lock (lockObject)
+                {
+                    if (!writers.TryGetValue(key, out this.writer))
+                    {
+                        this.writer = new MarkerWriter(providerId2);
+                        writers[key] = this.writer;
+                    }
+                }
+            }
+
+            this.series = !string.IsNullOrEmpty(seriesName) ? this.writer.CreateMarkerSeries(seriesName) : this.writer.DefaultSeries;
         }
     }
 }
-

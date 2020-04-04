@@ -1,4 +1,4 @@
-﻿namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation
 {
     using System;
     using System.ComponentModel;
@@ -15,22 +15,15 @@
             this.SpanId = spanId;
         }
 
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Dispose()
-        {
-            this.series.LeaveSpan(this);
-        }
-
-        public void Leave()
-        {
-            this.Dispose();
-        }
-
         internal Importance Level { get; }
 
         internal int Category { get; }
 
         internal int SpanId { get; }
+
+        public void Leave() => this.Dispose();
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Dispose() => this.series.LeaveSpan(this);
     }
 }
-
