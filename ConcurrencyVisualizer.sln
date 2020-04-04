@@ -14,7 +14,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConcurrencyVisualizer.Core", "ConcurrencyVisualizer.Core\ConcurrencyVisualizer.Core.csproj", "{422EC58D-1289-4A3E-A8B1-D2C2E897E283}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConcurrencyVisualizer.NetStandard", "ConcurrencyVisualizer.NetStandard\ConcurrencyVisualizer.NetStandard.csproj", "{69AAB775-CCC5-4E3E-B5A0-463897AF5A24}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConcurrencyVisualizer.NetFramework", "ConcurrencyVisualizer.NetFramework", "{C0C8B14B-600B-4E29-9867-7590865E7B03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{2BDF9138-EA3A-47A0-B426-439F10931034}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net45", "net45", "{172E7A53-F40B-4C51-8D1F-785E6B9F9764}"
+	ProjectSection(SolutionItems) = preProject
+		ConcurrencyVisualizer.NetFramework\lib\net45\Microsoft.ConcurrencyVisualizer.Markers.dll = ConcurrencyVisualizer.NetFramework\lib\net45\Microsoft.ConcurrencyVisualizer.Markers.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,13 +31,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69AAB775-CCC5-4E3E-B5A0-463897AF5A24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69AAB775-CCC5-4E3E-B5A0-463897AF5A24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69AAB775-CCC5-4E3E-B5A0-463897AF5A24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69AAB775-CCC5-4E3E-B5A0-463897AF5A24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2BDF9138-EA3A-47A0-B426-439F10931034} = {C0C8B14B-600B-4E29-9867-7590865E7B03}
+		{172E7A53-F40B-4C51-8D1F-785E6B9F9764} = {2BDF9138-EA3A-47A0-B426-439F10931034}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F708252-C307-4539-A0B8-A7D8064A2281}
