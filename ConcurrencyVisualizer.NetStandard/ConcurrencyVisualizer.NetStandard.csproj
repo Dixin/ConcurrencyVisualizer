@@ -9,7 +9,9 @@
     <FileVersion>16.0.20200210.3</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>8.0</LangVersion>
+    <AssemblyOriginatorKeyFile>..\Tools\Key.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>Microsoft.ConcurrencyVisualizer.Markers</AssemblyName>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
