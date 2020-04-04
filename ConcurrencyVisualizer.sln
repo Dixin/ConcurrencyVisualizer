@@ -1,39 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2018
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FF286327-C783-4F7A-AB73-9BCBAD0D4460}") = "ConcurrencyVisualizer", "ConcurrencyVisualizer\ConcurrencyVisualizer.nuproj", "{8DFD1EAC-CCBD-4704-8142-44D9A8486D98}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{36E4B853-6B0A-4952-ACF3-7B364C819D90}"
+	ProjectSection(SolutionItems) = preProject
+		Tools\ConcurrencyVisualizer.nuspec = Tools\ConcurrencyVisualizer.nuspec
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{41D59951-52C3-4635-A683-4257EA2616F9}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		README.md = README.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuproj", "Nuproj", "{9A9E86AB-45CF-49AA-96D5-37351054A8FE}"
-	ProjectSection(SolutionItems) = preProject
-		Tools\NuProj\Microsoft.Web.XmlTransform.dll = Tools\NuProj\Microsoft.Web.XmlTransform.dll
-		Tools\NuProj\NuGet.Core.dll = Tools\NuProj\NuGet.Core.dll
-		Tools\NuProj\NuGet.exe = Tools\NuProj\NuGet.exe
-		Tools\NuProj\NuProj.props = Tools\NuProj\NuProj.props
-		Tools\NuProj\NuProj.targets = Tools\NuProj\NuProj.targets
-		Tools\NuProj\NuProj.Tasks.dll = Tools\NuProj\NuProj.Tasks.dll
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rules", "Rules", "{B0949388-3B5F-47E2-984A-3E7C0E6C9FFE}"
-	ProjectSection(SolutionItems) = preProject
-		Tools\NuProj\Rules\content.xaml = Tools\NuProj\Rules\content.xaml
-		Tools\NuProj\Rules\folder.xaml = Tools\NuProj\Rules\folder.xaml
-		Tools\NuProj\Rules\general.browseobject.xaml = Tools\NuProj\Rules\general.browseobject.xaml
-		Tools\NuProj\Rules\general.xaml = Tools\NuProj\Rules\general.xaml
-		Tools\NuProj\Rules\none.xaml = Tools\NuProj\Rules\none.xaml
-		Tools\NuProj\Rules\ProjectItemsSchema.xaml = Tools\NuProj\Rules\ProjectItemsSchema.xaml
-		Tools\NuProj\Rules\ProjectReference.xaml = Tools\NuProj\Rules\ProjectReference.xaml
-		Tools\NuProj\Rules\ResolvedProjectReference.xaml = Tools\NuProj\Rules\ResolvedProjectReference.xaml
-		Tools\NuProj\Rules\scc.xaml = Tools\NuProj\Rules\scc.xaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConcurrencyVisualizer.Core", "ConcurrencyVisualizer.Core\ConcurrencyVisualizer.Core.csproj", "{422EC58D-1289-4A3E-A8B1-D2C2E897E283}"
@@ -44,10 +22,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8DFD1EAC-CCBD-4704-8142-44D9A8486D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DFD1EAC-CCBD-4704-8142-44D9A8486D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8DFD1EAC-CCBD-4704-8142-44D9A8486D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8DFD1EAC-CCBD-4704-8142-44D9A8486D98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{422EC58D-1289-4A3E-A8B1-D2C2E897E283}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,10 +29,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{9A9E86AB-45CF-49AA-96D5-37351054A8FE} = {36E4B853-6B0A-4952-ACF3-7B364C819D90}
-		{B0949388-3B5F-47E2-984A-3E7C0E6C9FFE} = {9A9E86AB-45CF-49AA-96D5-37351054A8FE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6F708252-C307-4539-A0B8-A7D8064A2281}
