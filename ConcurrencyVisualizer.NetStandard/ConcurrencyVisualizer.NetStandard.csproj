@@ -9,6 +9,11 @@
     <FileVersion>16.0.20200210.3</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>8.0</LangVersion>
+    <AssemblyName>Microsoft.ConcurrencyVisualizer.Markers</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>D:\User\GitHub\ConcurrencyVisualizer\ConcurrencyVisualizer.NetStandard\Microsoft.ConcurrencyVisualizer.Markers.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
