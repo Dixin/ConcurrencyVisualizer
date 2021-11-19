@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net50;net60</TargetFrameworks>
     <RootNamespace>Microsoft.ConcurrencyVisualizer.Instrumentation</RootNamespace>
     <Product>Microsoft Concurrency Visualizer</Product>
     <Description>Microsoft.ConcurrencyVisualizer.Markers</Description>
@@ -12,6 +12,8 @@
     <AssemblyOriginatorKeyFile>..\Tools\Key.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>Microsoft.ConcurrencyVisualizer.Markers</AssemblyName>
     <SignAssembly>true</SignAssembly>
+	<ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

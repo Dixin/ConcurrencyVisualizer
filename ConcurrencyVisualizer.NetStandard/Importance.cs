@@ -1,11 +1,10 @@
-namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation;
+
+public enum Importance
 {
-    public enum Importance
-    {
-        Undefined = 0,
-        Critical = 1,
-        High = 2,
-        Normal = 4,
-        Low = 5
-    }
+    Undefined = 0,
+    Critical = 1,
+    High = 2,
+    Normal = 4,
+    Low = 5
 }

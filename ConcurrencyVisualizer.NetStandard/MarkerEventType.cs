@@ -1,10 +1,9 @@
-namespace Microsoft.ConcurrencyVisualizer.Instrumentation
+namespace Microsoft.ConcurrencyVisualizer.Instrumentation;
+
+internal enum MarkerEventType
 {
-    internal enum MarkerEventType
-    {
-        EnterSpan,
-        LeaveSpan,
-        Flag,
-        Message
-    }
+    EnterSpan,
+    LeaveSpan,
+    Flag,
+    Message
 }
