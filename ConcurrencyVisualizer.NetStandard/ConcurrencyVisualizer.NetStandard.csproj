@@ -14,6 +14,7 @@
     <SignAssembly>true</SignAssembly>
 	<ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

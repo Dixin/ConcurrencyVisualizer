@@ -26,7 +26,7 @@ public sealed class MarkerWriter : IDisposable
         public ushort ChunkNumber;
     }
 
-    public static readonly Guid DefaultProviderGuid;
+    public static readonly Guid DefaultProviderGuid = new Guid("8D4925AB-505A-483b-A7E0-6F824A07A6F0");
 
     public readonly Guid ProviderId;
 
@@ -44,13 +44,13 @@ public sealed class MarkerWriter : IDisposable
 
     private readonly NativeMethods.EtwEnableCallback etwCallback;
 
-    private static EventDescriptor enterSpanEvent;
+    private static EventDescriptor enterSpanEvent = new (1, 1, 16, 4, 1, 1, long.MinValue);
 
-    private static EventDescriptor leaveSpanEvent;
+    private static EventDescriptor leaveSpanEvent = new (2, 1, 16, 4, 2, 1, long.MinValue);
 
-    private static EventDescriptor flagEvent;
+    private static EventDescriptor flagEvent = new (3, 1, 16, 4, 11, 2, long.MinValue);
 
-    private static EventDescriptor messageEvent;
+    private static EventDescriptor messageEvent = new (4, 1, 16, 4, 12, 3, long.MinValue);
 
     private byte traceLevel;
 
@@ -66,33 +66,19 @@ public sealed class MarkerWriter : IDisposable
 
     private volatile int disposed;
 
-    public MarkerSeries DefaultSeries
-    {
-        get;
-    }
-
-    static MarkerWriter()
-    {
-        DefaultProviderGuid = new Guid("8D4925AB-505A-483b-A7E0-6F824A07A6F0");
-        enterSpanEvent = new EventDescriptor(1, 1, 16, 4, 1, 1, long.MinValue);
-        leaveSpanEvent = new EventDescriptor(2, 1, 16, 4, 2, 1, long.MinValue);
-        flagEvent = new EventDescriptor(3, 1, 16, 4, 11, 2, long.MinValue);
-        messageEvent = new EventDescriptor(4, 1, 16, 4, 12, 3, long.MinValue);
-    }
+    public MarkerSeries DefaultSeries { get; }
 
     public unsafe MarkerWriter(Guid providerId)
     {
         this.ProviderId = providerId;
-        using (StreamReader streamReader = new (Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.ConcurrencyVisualizer.Instrumentation.Resources.ConcurrencyVisualizerMarkers.man")))
-        {
-            this.manifest = Encoding.UTF8.GetBytes(string.Format(CultureInfo.InvariantCulture, streamReader.ReadToEnd(), providerId));
-        }
+        using StreamReader streamReader = new (Assembly.GetExecutingAssembly().GetManifestResourceStream("Microsoft.ConcurrencyVisualizer.Instrumentation.Resources.ConcurrencyVisualizerMarkers.man")!);
+        this.manifest = Encoding.UTF8.GetBytes(string.Format(CultureInfo.InvariantCulture, streamReader.ReadToEnd(), providerId));
 
         this.etwCallback = this.EtwEnableCallback;
-        uint num = NativeMethods.EventRegister(ref this.ProviderId, this.etwCallback, null, ref this.regHandle);
-        if (num != 0)
+        uint error = NativeMethods.EventRegister(ref this.ProviderId, this.etwCallback, null, ref this.regHandle);
+        if (error != 0U)
         {
-            throw new Win32Exception((int)num, string.Format(CultureInfo.InvariantCulture, "Failed to register ETW provider: {0}.", providerId));
+            throw new Win32Exception((int)error, string.Format(CultureInfo.InvariantCulture, "Failed to register ETW provider: {0}.", providerId));
         }
 
         this.DefaultSeries = this.CreateMarkerSeries(MarkerSeries.DefaultSeriesName);
@@ -156,8 +142,8 @@ public sealed class MarkerWriter : IDisposable
 
     private bool IsCategoryEnabled(int category)
     {
-        long num = FromCategoryToKeyword(category);
-        return (this.anyKeywordMask & num) != 0L && (this.allKeywordMask & num) == this.allKeywordMask;
+        long keyword = FromCategoryToKeyword(category);
+        return (this.anyKeywordMask & keyword) != 0L && (this.allKeywordMask & keyword) == this.allKeywordMask;
     }
 
     private unsafe void EtwEnableCallback(ref Guid sourceId, int isEnabled, byte setLevel, long anyKeyword, long allKeyword, NativeMethods.EventFilterDescriptor* filterData, void* callbackContext)
@@ -209,16 +195,16 @@ public sealed class MarkerWriter : IDisposable
         ptr[1].Size = 1u;
         ptr[2].Ptr = (ulong)&category;
         ptr[2].Size = 1u;
-        int num = 3;
+        int index = 3;
         if (sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2)
         {
             ptr[3].Ptr = (ulong)&spanId;
             ptr[3].Size = 4u;
-            num = 4;
+            index = 4;
         }
-        ptr[num].Size = (uint)(((!string.IsNullOrEmpty(markerSeries) ? markerSeries.Length : 0) + 1) * 2);
-        ptr[num + 1].Size = (uint)(((!string.IsNullOrEmpty(text) ? text.Length : 0) + 1) * 2);
-        ptr[num + 2].Size = 1u;
+        ptr[index].Size = (uint)(((!string.IsNullOrEmpty(markerSeries) ? markerSeries.Length : 0) + 1) * 2);
+        ptr[index + 1].Size = (uint)(((!string.IsNullOrEmpty(text) ? text.Length : 0) + 1) * 2);
+        ptr[index + 2].Size = 1u;
         bool result;
         fixed (char* ptr2 = string.IsNullOrEmpty(markerSeries) ? string.Empty : markerSeries)
         {
@@ -226,9 +212,9 @@ public sealed class MarkerWriter : IDisposable
             {
                 fixed (char* ptr4 = string.Empty)
                 {
-                    ptr[num].Ptr = (ulong)ptr2;
-                    ptr[num + 1].Ptr = (ulong)ptr3;
-                    ptr[num + 2].Ptr = (ulong)ptr4;
+                    ptr[index].Ptr = (ulong)ptr2;
+                    ptr[index + 1].Ptr = (ulong)ptr3;
+                    ptr[index + 2].Ptr = (ulong)ptr4;
                     result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, (uint)userDataCount, ptr) == 0;
                 }
             }
@@ -238,7 +224,7 @@ public sealed class MarkerWriter : IDisposable
 
     internal static long FromCategoryToKeyword(int category)
     {
-        int num = category == -1 ? 62 : (category >= 0 ? category : 0) % 48;
-        return long.MinValue | (1L << num);
+        int keyword = category == -1 ? 62 : (category >= 0 ? category : 0) % 48;
+        return long.MinValue | (1L << keyword);
     }
 }
