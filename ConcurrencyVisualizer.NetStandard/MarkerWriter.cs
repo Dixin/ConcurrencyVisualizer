@@ -170,54 +170,51 @@ public sealed class MarkerWriter : IDisposable
             TotalChunks = 1,
             ChunkNumber = 0
         };
-        NativeMethods.EventData* ptr = stackalloc NativeMethods.EventData[2];
-        ptr->Ptr = (ulong)&manifestEnvelope;
-        ptr->Size = (uint)sizeof(ManifestEnvelope);
-        ptr[1].Size = (uint)this.manifest.Length;
+        NativeMethods.EventData* eventDataPtr = stackalloc NativeMethods.EventData[2];
+        eventDataPtr->Ptr = (ulong)&manifestEnvelope;
+        eventDataPtr->Size = (uint)sizeof(ManifestEnvelope);
+        eventDataPtr[1].Size = (uint)this.manifest.Length;
         bool result;
-        fixed (byte* ptr2 = this.manifest)
+        fixed (byte* manifestPtr = this.manifest)
         {
-            ptr[1].Ptr = (ulong)ptr2;
-            result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, 2u, ptr) == 0;
+            eventDataPtr[1].Ptr = (ulong)manifestPtr;
+            result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, 2u, eventDataPtr) == 0;
         }
         return result;
     }
 
     private unsafe bool WriteMarkerEvent(ref EventDescriptor sourceDescriptor, Importance level, int category, int spanId, string markerSeries, string text)
     {
-        int userDataCount = sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2 ? 7 : 6;
+        int userDataCount = sourceDescriptor.EventId is 1 or 2 ? 7 : 6;
         EventDescriptor eventDescriptor = new (sourceDescriptor.EventId, sourceDescriptor.Version, sourceDescriptor.Channel, (byte)level, sourceDescriptor.Opcode, sourceDescriptor.Task, FromCategoryToKeyword(category));
-        NativeMethods.EventData* ptr = stackalloc NativeMethods.EventData[7];
-        byte b = (byte)sourceDescriptor.EventId;
-        ptr->Ptr = (ulong)&b;
-        ptr->Size = 1u;
-        ptr[1].Ptr = (ulong)&level;
-        ptr[1].Size = 1u;
-        ptr[2].Ptr = (ulong)&category;
-        ptr[2].Size = 1u;
+        NativeMethods.EventData* eventDataPtr = stackalloc NativeMethods.EventData[7];
+        byte eventId = (byte)sourceDescriptor.EventId;
+        eventDataPtr->Ptr = (ulong)&eventId;
+        eventDataPtr->Size = 1u;
+        eventDataPtr[1].Ptr = (ulong)&level;
+        eventDataPtr[1].Size = 1u;
+        eventDataPtr[2].Ptr = (ulong)&category;
+        eventDataPtr[2].Size = 1u;
         int index = 3;
-        if (sourceDescriptor.EventId == 1 || sourceDescriptor.EventId == 2)
+        if (sourceDescriptor.EventId is 1 or 2)
         {
-            ptr[3].Ptr = (ulong)&spanId;
-            ptr[3].Size = 4u;
+            eventDataPtr[3].Ptr = (ulong)&spanId;
+            eventDataPtr[3].Size = 4u;
             index = 4;
         }
-        ptr[index].Size = (uint)(((!string.IsNullOrEmpty(markerSeries) ? markerSeries.Length : 0) + 1) * 2);
-        ptr[index + 1].Size = (uint)(((!string.IsNullOrEmpty(text) ? text.Length : 0) + 1) * 2);
-        ptr[index + 2].Size = 1u;
+
+        eventDataPtr[index].Size = (uint)(((!string.IsNullOrEmpty(markerSeries) ? markerSeries.Length : 0) + 1) * 2);
+        eventDataPtr[index + 1].Size = (uint)(((!string.IsNullOrEmpty(text) ? text.Length : 0) + 1) * 2);
+        eventDataPtr[index + 2].Size = 1u;
         bool result;
-        fixed (char* ptr2 = string.IsNullOrEmpty(markerSeries) ? string.Empty : markerSeries)
+        fixed (char* markerSeriesPtr = string.IsNullOrEmpty(markerSeries) ? string.Empty : markerSeries)
+        fixed (char* stringPtr = string.IsNullOrEmpty(text) ? string.Empty : text)
+        fixed (char* emptyStringPtr = string.Empty)
         {
-            fixed (char* ptr3 = string.IsNullOrEmpty(text) ? string.Empty : text)
-            {
-                fixed (char* ptr4 = string.Empty)
-                {
-                    ptr[index].Ptr = (ulong)ptr2;
-                    ptr[index + 1].Ptr = (ulong)ptr3;
-                    ptr[index + 2].Ptr = (ulong)ptr4;
-                    result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, (uint)userDataCount, ptr) == 0;
-                }
-            }
+            eventDataPtr[index].Ptr = (ulong)markerSeriesPtr;
+            eventDataPtr[index + 1].Ptr = (ulong)stringPtr;
+            eventDataPtr[index + 2].Ptr = (ulong)emptyStringPtr;
+            result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, (uint)userDataCount, eventDataPtr) == 0;
         }
         return result;
     }
