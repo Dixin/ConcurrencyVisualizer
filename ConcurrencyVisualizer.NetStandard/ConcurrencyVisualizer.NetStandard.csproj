@@ -13,7 +13,6 @@
     <AssemblyName>Microsoft.ConcurrencyVisualizer.Markers</AssemblyName>
     <SignAssembly>true</SignAssembly>
 	<ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>latest</LangVersion>
 	<Nullable>enable</Nullable>
   </PropertyGroup>
 

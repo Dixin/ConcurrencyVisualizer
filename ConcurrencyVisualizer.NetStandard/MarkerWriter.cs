@@ -180,6 +180,7 @@ public sealed class MarkerWriter : IDisposable
             eventDataPtr[1].Ptr = (ulong)manifestPtr;
             result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, 2u, eventDataPtr) == 0;
         }
+
         return result;
     }
 
@@ -216,6 +217,7 @@ public sealed class MarkerWriter : IDisposable
             eventDataPtr[index + 2].Ptr = (ulong)emptyStringPtr;
             result = NativeMethods.EventWrite(this.regHandle, ref eventDescriptor, (uint)userDataCount, eventDataPtr) == 0;
         }
+
         return result;
     }
 

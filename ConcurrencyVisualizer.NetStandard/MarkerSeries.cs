@@ -149,5 +149,4 @@ public class MarkerSeries
 
     internal void LeaveSpan(Span span) =>
         this.Writer.WriteMarkerEvent(MarkerEventType.LeaveSpan, this.SeriesName, span.Level, span.Category, span.SpanId, string.Empty);
-
 }

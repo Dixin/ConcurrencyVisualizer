@@ -1,11 +1,5 @@
 namespace Microsoft.ConcurrencyVisualizer.Instrumentation;
 
-#if NET9_0_OR_GREATER
-using Lock = System.Threading.Lock;
-#else
-using Lock = object;
-#endif
-
 internal sealed class MarkerTraceListener : TraceListener
 {
     private static readonly Dictionary<string, MarkerWriter> writers;
@@ -20,8 +14,8 @@ internal sealed class MarkerTraceListener : TraceListener
 
     static MarkerTraceListener()
     {
-        lockObject = new ();
-        writers = new Dictionary<string, MarkerWriter>();
+        lockObject = new();
+        writers = new();
         try
         {
             writers.Add(MarkerWriter.DefaultProviderGuid.ToString("D"), new MarkerWriter(MarkerWriter.DefaultProviderGuid));
@@ -44,6 +38,7 @@ internal sealed class MarkerTraceListener : TraceListener
             this.InitializeProvider(null, null);
             return;
         }
+
         string[] array = initializeData.Split(';');
         this.InitializeProvider(array.Length > 1 ? array[1].Trim() : null, array[0].Trim());
     }
@@ -116,14 +111,10 @@ internal sealed class MarkerTraceListener : TraceListener
     {
         if (this.series?.IsEnabled() is true && (this.Filter == null || this.Filter.ShouldTrace(eventCache, source, eventType, id, null, null, null, null)))
         {
-            if (this.IsStackTraceEnabled(eventCache))
-            {
-                this.WriteEvent(eventType, id, $"Callstack:{Environment.NewLine}{eventCache.Callstack}");
-            }
-            else
-            {
-                this.WriteEvent(eventType, id, string.Empty);
-            }
+            this.WriteEvent(
+                eventType,
+                id,
+                this.IsStackTraceEnabled(eventCache) ? $"Callstack:{Environment.NewLine}{eventCache.Callstack}" : string.Empty);
         }
     }
 
@@ -155,6 +146,7 @@ internal sealed class MarkerTraceListener : TraceListener
             {
                 stringBuilder.Append(format);
             }
+
             if (this.IsStackTraceEnabled(eventCache))
             {
                 stringBuilder.Append($"{Environment.NewLine}Callstack:{Environment.NewLine}");
@@ -176,6 +168,7 @@ internal sealed class MarkerTraceListener : TraceListener
             this.writer?.Dispose();
             this.isDisposed = true;
         }
+
         base.Dispose(disposing);
     }
 
