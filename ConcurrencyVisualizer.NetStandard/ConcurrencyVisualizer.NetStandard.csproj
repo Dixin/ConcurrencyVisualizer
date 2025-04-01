@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net50;net60;net70;net80</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net50;net60;net70;net80;net90</TargetFrameworks>
     <RootNamespace>Microsoft.ConcurrencyVisualizer.Instrumentation</RootNamespace>
     <Product>Microsoft Concurrency Visualizer</Product>
     <Description>Microsoft.ConcurrencyVisualizer.Markers</Description>
     <AssemblyVersion>16.0.0.0</AssemblyVersion>
     <FileVersion>16.0.20200210.3</FileVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>preview</LangVersion>
     <AssemblyOriginatorKeyFile>..\Tools\Key.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>Microsoft.ConcurrencyVisualizer.Markers</AssemblyName>
     <SignAssembly>true</SignAssembly>
