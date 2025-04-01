@@ -1,10 +1,16 @@
 namespace Microsoft.ConcurrencyVisualizer.Instrumentation;
 
+#if NET9_0_OR_GREATER
+using Lock = System.Threading.Lock;
+#else
+using Lock = object;
+#endif
+
 internal sealed class MarkerTraceListener : TraceListener
 {
     private static readonly Dictionary<string, MarkerWriter> writers;
 
-    private static readonly object lockObject;
+    private static readonly Lock lockObject;
 
     private MarkerWriter? writer;
 
@@ -14,7 +20,7 @@ internal sealed class MarkerTraceListener : TraceListener
 
     static MarkerTraceListener()
     {
-        lockObject = new object();
+        lockObject = new ();
         writers = new Dictionary<string, MarkerWriter>();
         try
         {
